@@ -66,14 +66,14 @@ path_file <- file.path(path_dir, file_name)
 
 if (!file.exists(path_file)) {
   # Write file
-  write.csv(t, path_file, row.names = FALSE)
+  write.csv(t, path_file, row.names = FALSE, fileEncoding="UTF-8")
   
   # Overwrite latest
   latest <- file.path(release_path, "latest", paste0(output_filenames$table_municipality, ".csv"))
   if (file.exists(latest)) {
     file.remove(latest)
   }
-  write.csv(t, latest, row.names = FALSE)
+  write.csv(t, latest, row.names = FALSE, fileEncoding="UTF-8")
 }
 
 # ## Cases_by_age ##
