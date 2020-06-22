@@ -53,7 +53,7 @@ collated$municipality <- collated[["municipality"]] %>% mutate(
 # Add base if any
 base_table_path <- file.path(base_path, paste0(output_filenames$table_municipality, ".csv"))
 if (file.exists(base_table_path)) {
-  base_table_municipality <- read.csv(base_table_path)
+  base_table_municipality <- read.csv(base_table_path, encoding = "UTF-8")
   collated$municipality <- rbind(collated[["municipality"]], base_table_municipality) %>% arrange(date, mun_code) 
 }
 
