@@ -28,7 +28,9 @@ new_files <- tibble(url=zip_links[zip_links %!in% sources$url]) %>% mutate(
   unzipped = if_else(str_detect(path,".zip$"), FALSE, NA),
   accessed = as.POSIXct(NA),
   release_date = as_date(str_match(path, "\\d{8}"), format="%d%m%Y"),
-  dir = as.character(NA)
+  dir = as.character(NA),
+  updated = as.POSIXct(NA),
+  newest_release = FALSE,
 )
 
 # Append to souces
@@ -56,12 +58,14 @@ if ( to_unzip %>% tally() > 0) {
   # If so, unzip them
   cat("# Files to unzip:", to_unzip %>% tally() %>% pull(n), "\n")
   
+  updated <- list()
   for (source_path in to_unzip$path) {
     dir_name <- sub('\\.zip$', '', source_path)
     dir_path <- file.path(unzip_path, dir_name)
     dir.create(dir_path, showWarnings = F)
     unzip(file.path(download_path, source_path), exdir=dir_path)
     cat("Unzipped", source_path, "into", dir_path, "\n")
+    updated[source_path] <- as_datetime(max(unzip(file.path(download_path, source_path), list=T)$Date))
   }
   
   # Update sources
@@ -69,6 +73,22 @@ if ( to_unzip %>% tally() > 0) {
     unzipped = file.path(unzip_path, path) %in% paste0(list.dirs(unzip_path), ".zip"),
     dir = if_else(is.na(dir) & unzipped, sub('\\.zip$', '', path), dir)
   )
+  
+  # Set last updated
+  updated <- rownames_to_column(stack(tibble(updated)), "path") %>%
+    transmute(path, updated=as_datetime(values))
+  
+  sources <- sources %>% left_join(updated, by="path")
+  
+  # newest by releasedate?
+  sources <- sources %>% 
+    group_by(release_date) %>% 
+    arrange(desc(updated)) %>% 
+    mutate(
+      newest_release = updated == max(updated)
+      ) %>% 
+    ungroup()
+  
 } else {
   cat("No new files to unzip.\n")
 }

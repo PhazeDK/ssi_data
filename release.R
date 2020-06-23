@@ -4,7 +4,8 @@
 library(tidyverse)
 source("common.R")
 
-sources <- load_sources()
+all_sources <- load_sources()
+sources <- all_sources %>% filter(newest_release)
 
 # Tables:
 # Cases_by_age

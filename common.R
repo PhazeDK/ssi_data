@@ -64,7 +64,9 @@ load_sources <- function() {
         col_logical(),
         col_datetime(),
         col_date(),
-        col_character()
+        col_character(),
+        col_datetime(),
+        col_logical()
       ))  
   } else {
     sources <- tibble(
@@ -74,7 +76,9 @@ load_sources <- function() {
       unzipped = logical(),
       accessed = as.POSIXct(NA),
       release_date = as_date(NA),
-      dir = character()
+      dir = character(),
+      updated = as.POSIXct(NA),
+      newest_release = logical()
     )
   }
 }
