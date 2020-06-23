@@ -45,8 +45,8 @@ collated$municipality$mun_name <- str_replace_all(collated$municipality$mun_name
 collated$municipality$mun_name <- str_replace_all(collated$municipality$mun_name, '[:punct:]', "-")
 
 collated$municipality <- collated[["municipality"]] %>% mutate(
-  tests = as.integer(tests),
-  cases = as.integer(cases),
+  tests = as.integer(str_replace_all(tests, '\\.', '')),
+  cases = as.integer(str_replace_all(cases, '\\.', '')),
   cases_per_100K = as.double(cases_per_100K)
 )
 
@@ -55,6 +55,15 @@ base_table_path <- file.path(base_path, paste0(output_filenames$table_municipali
 if (file.exists(base_table_path)) {
   base_table_municipality <- read.csv(base_table_path, encoding = "UTF-8")
   collated$municipality <- rbind(collated[["municipality"]], base_table_municipality) %>% arrange(date, mun_code) 
+}
+
+base_municipalities_path <- file.path(base_path, "municipalities.csv")
+if (file.exists(base_municipalities_path)) {
+  base_muns <- read.csv(base_municipalities_path, encoding = "UTF-8")
+  collated$municipality <- collated$municipality %>% 
+    select(-mun_name) %>% 
+    left_join(base_muns, by="mun_code") %>% 
+    select(date, mun_code, mun_name, tests, cases, population, cases_per_100K)
 }
 
 # RELEASE
