@@ -78,10 +78,16 @@ if ( to_unzip %>% tally() > 0) {
   updated <- rownames_to_column(stack(tibble(updated)), "path") %>%
     transmute(path, updated=as_datetime(values))
   
-  sources <- sources %>% left_join(updated, by="path")
+  sources <- sources %>%
+    left_join(updated, by="path") %>% 
+    mutate(
+      updated = if_else(is.na(updated.x), updated.y, updated.x)
+    ) %>% 
+    select(-updated.x, -updated.y)
   
   # newest by releasedate?
   sources <- sources %>% 
+    select(-newest_release) %>% 
     group_by(release_date) %>% 
     arrange(desc(updated)) %>% 
     mutate(
