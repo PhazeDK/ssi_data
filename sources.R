@@ -20,10 +20,11 @@ base_url<- "https://www.ssi.dk/sygdomme-beredskab-og-forskning/sygdomsovervaagni
 # Get download links
 pg <- read_html(base_url)
 links <- html_attr(html_nodes(pg, "a"), "href")
-zip_links <- unique(paste0(links[grepl("files.ssi.dk/data-epidemiologiske?-rapport", links, ignore.case = T)], ".zip"))
+links_fixed <- str_remove_all(links, "\\.zip.*$")
+zip_links <- unique(paste0(links_fixed[grepl("data-epidemiologiske?-rapport", links_fixed, ignore.case = T)], ".zip"))
 
 new_files <- tibble(url=zip_links[zip_links %!in% sources$url]) %>% mutate(
-  path = url_parse(url)$path,
+  path = sub(".*/", "", url_parse(url)$path),
   downloaded = FALSE,
   unzipped = if_else(str_detect(path,".zip$"), FALSE, NA),
   accessed = as.POSIXct(NA),
