@@ -21,6 +21,7 @@ base_url<- "https://www.ssi.dk/sygdomme-beredskab-og-forskning/sygdomsovervaagni
 pg <- read_html(base_url)
 links <- html_attr(html_nodes(pg, "a"), "href")
 links_fixed <- str_remove_all(links, "\\.zip.*$")
+links_fixed <- str_remove_all(links, "\t")
 zip_links <- unique(paste0(links_fixed[grepl("data-epidemiologiske?-rapport", links_fixed, ignore.case = T)], ".zip"))
 
 new_files <- tibble(url=zip_links[zip_links %!in% sources$url]) %>% mutate(
