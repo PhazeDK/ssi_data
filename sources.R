@@ -15,7 +15,8 @@ sources <- load_sources()
 loaded_sources <- sources
 
 # Get urls online
-base_url<- "https://www.ssi.dk/sygdomme-beredskab-og-forskning/sygdomsovervaagning/c/covid19-overvaagning/arkiv-med-overvaagningsdata-for-covid19"
+#base_url<- "https://www.ssi.dk/sygdomme-beredskab-og-forskning/sygdomsovervaagning/c/covid19-overvaagning/arkiv-med-overvaagningsdata-for-covid19"
+base_url <- "https://covid19.ssi.dk/overvagningsdata/download-fil-med-overvaagningdata"
 
 # Get download links
 pg <- read_html(base_url)
